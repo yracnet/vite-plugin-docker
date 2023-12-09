@@ -136,15 +136,18 @@ export const startContainer: DockerAction = async (config, docker, status) => {
 
 export const removeContainer: DockerAction = async (config, docker, status) => {
   const logger = config.logger;
+  logger.warn("This method is not implemented yet.");
   return status;
 };
 
 export const removeImage: DockerAction = async (config, docker, status) => {
   const logger = config.logger;
+  logger.warn("This method is not implemented yet.");
   return status;
 };
 
 export const stopContainer: DockerAction = async (config, docker, status) => {
   const logger = config.logger;
+  logger.warn("This method is not implemented yet.");
   return status;
 };
