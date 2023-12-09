@@ -1,0 +1,48 @@
+{
+  "name": "vite-plugin-docker-deploy",
+  "version": "0.0.1",
+  "type": "module",
+  "keywords": [
+    "vite",
+    "docker",
+    "docker-compose",
+    "server",
+    "environment",
+    "development"
+  ],
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "license": "MIT",
+  "author": "Willyams Yujra <yracnet@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yracnet/vite-plugin-docker"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.cjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "homepage": "https://github.com/yracnet/vite-plugin-docker",
+  "bugs": "https://github.com/yracnet/vite-plugin-docker/issues",
+  "scripts": {
+    "build": "tsup"
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "vite": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.4",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.6"
+  }
+}
