@@ -28,28 +28,73 @@ export type PluginDockerStatus = {
   error?: any;
 };
 
+/**
+ * Configuration options for the Vite.js Docker plugin.
+ */
 export type PluginDockerConfig = {
+  /**
+   * Enable or disable the Docker plugin.
+   */
   enabled: boolean;
+  /**
+   * Name of the Docker container.
+   */
   name: string;
+  /**
+   * Profile for building the Docker image.
+   */
   profile: string;
+  /**
+   * Custom name for Dockerfile for building the image.
+   */
   dockerfile: string;
+  /**
+   * Root directory for the Docker configuration.
+   */
   root: string;
-  envPrefix: string[];
+  /**
+   * Tag for the Docker image.
+   */
   imageTag: string;
+  /**
+   * Array of file patterns to include in the Docker image.
+   */
   imageIncludes: string[];
+  /**
+   * Callback function to customize container creation options.
+   */
   onContainerCreateOptions: (
     options: Dockerode.ContainerCreateOptions,
     config: PluginDockerConfig
   ) => Dockerode.ContainerCreateOptions;
+  /**
+   * Callback function to customize image build options.
+   */
   onImageBuildOptions: (
     options: Dockerode.ImageBuildOptions,
     config: PluginDockerConfig
   ) => Dockerode.ImageBuildOptions;
-  envOverride: Record<string, string>;
+  // envPrefix: string[];
+  // envOverride: Record<string, string>;
+  /**
+   * Actions to perform when starting the container.
+   */
   startActions: PluginDockerStartAction[];
+  /**
+   * Actions to perform after the container finishes.
+   */
   finishActions: PluginDockerFinishAction[];
+  /**
+   * Docker options for additional configuration.
+   */
   dockerOptions?: DockerOptions;
+  /**
+   * Enable or disable hot reload.
+   */
   hotReload: boolean;
+  /**
+   * Logger instance for logging messages.
+   */
   logger: Logger;
 };
 
@@ -59,6 +104,8 @@ export type PluginDockerOptions = Omit<
   Partial<PluginDockerConfig>,
   "root" | "logger"
 > & {
+  /**
+   * Name of the Docker container.
+   */
   name: string;
-  dockerfile: string;
 };

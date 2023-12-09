@@ -41,16 +41,15 @@
   },
   "peerDependencies": {
     "dockerode": "^4.0.0",
-    "slash-path": "^0.0.1",
-    "vite": "^5.0.0"
+    "tar-fs": "^3.0.4",
+    "vite": "^2.0.0"
   },
   "devDependencies": {
     "@types/dockerode": "^3.3.23",
     "@types/node": "^20.10.4",
     "@types/tar-fs": "^2.0.4",
-    "slash-path": "^0.0.1",
     "tsup": "^8.0.1",
     "typescript": "^5.3.3",
-    "vite": "^5.0.6"
+    "vite": "^2.0.0"
   }
 }

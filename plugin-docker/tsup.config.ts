@@ -5,7 +5,7 @@ export default defineConfig([
     entry: ["src/index.ts"],
     format: ["cjs", "esm"],
     outDir: "dist",
-    external: ["vite", "json-server", "connect", "connect-pause"],
+    external: ["vite", "dockerode", "connect", "connect-pause"],
     dts: {
       resolve: true,
     },

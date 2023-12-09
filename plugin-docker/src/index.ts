@@ -1,4 +1,4 @@
-import { join, relative, resolve } from "path";
+import { join } from "path";
 import Docker from "dockerode";
 import {
   PluginDockerAction,
@@ -108,9 +108,9 @@ const assertPluginDockerConfig = (
     imageIncludes = [],
     onContainerCreateOptions = (opts) => opts,
     onImageBuildOptions = (opts) => opts,
-    dockerfile,
-    envPrefix = [],
-    envOverride = {},
+    dockerfile = "Dockerfile",
+    // envPrefix = [],
+    // envOverride = {},
     startActions = ["start-container"],
     finishActions = ["stop-container"],
     dockerOptions = defaultDockerOptions,
@@ -130,8 +130,8 @@ const assertPluginDockerConfig = (
     imageTag,
     imageIncludes,
     dockerfile,
-    envPrefix,
-    envOverride,
+    // envPrefix,
+    // envOverride,
     onContainerCreateOptions,
     onImageBuildOptions,
     startActions,
