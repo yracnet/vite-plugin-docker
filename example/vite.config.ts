@@ -1,15 +1,14 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 //@ts-ignore
-import { pluginDocker } from "../plugin-docker/src";
+//import { pluginDocker } from "../plugin-docker/src";
+import { pluginDocker } from "vite-plugin-docker";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
-    //@ts-ignore
     pluginDocker([
-      //@ts-ignore
       {
         name: "NGinx",
         dockerfile: "NGinx.Dockerfile",
@@ -24,7 +23,6 @@ export default defineConfig({
         },
         startActions: ["create-image", "create-container", "start-container"],
       },
-      //@ts-ignore
       {
         name: "MongoV1",
         imageTag: "mongo",
