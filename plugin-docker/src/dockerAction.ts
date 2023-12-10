@@ -63,7 +63,7 @@ export const removeImage: DockerAction = async (config, docker, status) => {
 
 export const createContainer: DockerAction = async (config, docker, status) => {
   if (status.container) {
-    config.logger.warn(`The container: ${config.name} exists!`);
+    config.logger.warn(`The container ${config.name} exists!`);
     return status;
   }
   try {
@@ -97,7 +97,7 @@ export const restartContainer: DockerAction = async (
 ) => {
   const { container } = status;
   if (!container) {
-    config.logger.warn(`The container: ${config.name} don't exists!`);
+    config.logger.warn(`The container ${config.name} don't exists!`);
     return status;
   }
   try {
@@ -112,12 +112,12 @@ export const restartContainer: DockerAction = async (
 export const startContainer: DockerAction = async (config, docker, status) => {
   const { container, containerInfo } = status;
   if (!container) {
-    config.logger.warn(`The container: ${config.name} don't exists!`);
+    config.logger.warn(`The container ${config.name} don't exists!`);
     return status;
   }
   try {
     if (containerInfo!.State === "running") {
-      config.logger.warn(`The container: ${config.name} is running!`);
+      config.logger.warn(`The container ${config.name} is running!`);
       return status;
     }
     const startOpts = config.actionOptions.onContainerStartOptions({}, config);
@@ -132,7 +132,7 @@ export const startContainer: DockerAction = async (config, docker, status) => {
 export const stopContainer: DockerAction = async (config, docker, status) => {
   const { container } = status;
   if (!container) {
-    config.logger.warn(`The container: ${config.name} don't exists!`);
+    config.logger.warn(`The container ${config.name} don't exists!`);
     return status;
   }
   try {
@@ -148,7 +148,7 @@ export const stopContainer: DockerAction = async (config, docker, status) => {
 export const removeContainer: DockerAction = async (config, docker, status) => {
   const { container } = status;
   if (!container) {
-    config.logger.warn(`The container: ${config.name} don't exists!`);
+    config.logger.warn(`The container ${config.name} don't exists!`);
     return status;
   }
   try {
