@@ -141,5 +141,5 @@ export type PluginDockerOptions = Omit<
    * Name of the Docker container.
    */
   name: string;
-  actionOptions: Partial<PluginDockerActionOptions>;
+  actionOptions?: Partial<PluginDockerActionOptions>;
 };
