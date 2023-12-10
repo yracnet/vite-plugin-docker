@@ -9,13 +9,13 @@ import { Plugin, PluginOption, createLogger } from "vite";
 import {
   createContainer,
   createImage,
-  getStatus,
   removeContainer,
   removeImage,
   startContainer,
   stopContainer,
-} from "./dockerActions";
+} from "./dockerAction";
 import Dockerode from "dockerode";
+import { getStatus } from "./dockerInfo";
 const PLUGIN_NAME = "vite-plugin-docker";
 
 //@ts-ignore
@@ -106,8 +106,7 @@ const assertPluginDockerConfig = (
       .replace(/\.dockerfile/gi, "")
       .replace(/\.|-|\/|\\/gi, "_"),
     imageIncludes = [],
-    onContainerCreateOptions = (opts) => opts,
-    onImageBuildOptions = (opts) => opts,
+    actionOptions = {},
     dockerfile = "Dockerfile",
     // envPrefix = [],
     // envOverride = {},
@@ -122,6 +121,14 @@ const assertPluginDockerConfig = (
   const logger = createLogger("info", {
     prefix: `${PLUGIN_NAME}:${name}`,
   });
+  const {
+    onContainerCreateOptions = (opts) => opts,
+    onContainerStartOptions = (opts) => opts,
+    onContainerStopOptions = (opts) => opts,
+    onContainerRemoveOptions = (opts) => opts,
+    onImageBuildOptions = (opts) => opts,
+    onImageRemoveOptions = (opts) => opts,
+  } = actionOptions;
   return {
     enabled,
     root,
@@ -132,8 +139,14 @@ const assertPluginDockerConfig = (
     dockerfile,
     // envPrefix,
     // envOverride,
-    onContainerCreateOptions,
-    onImageBuildOptions,
+    actionOptions: {
+      onContainerCreateOptions,
+      onContainerStartOptions,
+      onContainerStopOptions,
+      onContainerRemoveOptions,
+      onImageBuildOptions,
+      onImageRemoveOptions,
+    },
     startActions,
     finishActions,
     dockerOptions,

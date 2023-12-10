@@ -18,14 +18,56 @@ export type PluginDockerAction =
   | PluginDockerFinishAction;
 
 export type PluginDockerStatus = {
-  containerId: string;
-  containerName: string;
-  containerState: string;
-  containerExist: boolean;
-  imageId: string;
-  imageName: string;
-  imageExist: boolean;
+  image?: Dockerode.Image;
+  imageInfo?: Dockerode.ImageInfo;
+  container?: Dockerode.Container;
+  containerInfo?: Dockerode.ContainerInfo;
   error?: any;
+};
+
+export type PluginDockerActionOptions = {
+  /**
+   * Callback function to customize container creation options.
+   */
+  onContainerCreateOptions: (
+    options: Dockerode.ContainerCreateOptions,
+    config: PluginDockerConfig
+  ) => Dockerode.ContainerCreateOptions;
+  /**
+   * Callback function to customize start container options.
+   */
+  onContainerStartOptions: (
+    options: Dockerode.ContainerStartOptions,
+    config: PluginDockerConfig
+  ) => Dockerode.ContainerStartOptions;
+  /**
+   * Callback function to customize stop container options.
+   */
+  onContainerStopOptions: (
+    options: Dockerode.ContainerStopOptions,
+    config: PluginDockerConfig
+  ) => Dockerode.ContainerStopOptions;
+  /**
+   * Callback function to customize remove container options.
+   */
+  onContainerRemoveOptions: (
+    options: Dockerode.ContainerRemoveOptions,
+    config: PluginDockerConfig
+  ) => Dockerode.ContainerRemoveOptions;
+  /**
+   * Callback function to customize image build options.
+   */
+  onImageBuildOptions: (
+    options: Dockerode.ImageBuildOptions,
+    config: PluginDockerConfig
+  ) => Dockerode.ImageBuildOptions;
+  /**
+   * Callback function to customize image build options.
+   */
+  onImageRemoveOptions: (
+    options: Dockerode.ImageRemoveOptions,
+    config: PluginDockerConfig
+  ) => Dockerode.ImageRemoveOptions;
 };
 
 /**
@@ -61,19 +103,9 @@ export type PluginDockerConfig = {
    */
   imageIncludes: string[];
   /**
-   * Callback function to customize container creation options.
+   * Action Options for customize options.
    */
-  onContainerCreateOptions: (
-    options: Dockerode.ContainerCreateOptions,
-    config: PluginDockerConfig
-  ) => Dockerode.ContainerCreateOptions;
-  /**
-   * Callback function to customize image build options.
-   */
-  onImageBuildOptions: (
-    options: Dockerode.ImageBuildOptions,
-    config: PluginDockerConfig
-  ) => Dockerode.ImageBuildOptions;
+  actionOptions: PluginDockerActionOptions;
   // envPrefix: string[];
   // envOverride: Record<string, string>;
   /**
@@ -102,10 +134,11 @@ export type DockerOptions = Dockerode.DockerOptions;
 
 export type PluginDockerOptions = Omit<
   Partial<PluginDockerConfig>,
-  "root" | "logger"
+  "root" | "logger" | "actionOptions"
 > & {
   /**
    * Name of the Docker container.
    */
   name: string;
+  actionOptions: Partial<PluginDockerActionOptions>;
 };
