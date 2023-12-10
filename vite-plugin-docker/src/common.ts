@@ -1,7 +1,9 @@
 import { PluginDockerConfig } from "./types";
 import fs from "fs";
-import path from "path";
+import path, { join } from "path";
 import tar, { Pack } from "tar-fs";
+import dotenv from "dotenv";
+import { loadEnv } from "vite";
 
 type ItemEntry = {
   name: string;
@@ -10,6 +12,7 @@ type ItemEntry = {
 
 export const createTarStream = (config: PluginDockerConfig): Pack => {
   const { profile, imageIncludes, root } = config;
+  const envDocker = loadDockerEnv(config);
   const tarStream = tar.pack(profile).on("error", (error) => {
     console.error("Error al crear el archivo tar:", error);
   });
@@ -46,4 +49,19 @@ export const createTar = (output: string, tarStream: Pack) => {
   tarStream.pipe(fs.createWriteStream(output)).on("finish", () => {
     console.log("Write:", output);
   });
+};
+
+export const loadDockerEnv = (config: PluginDockerConfig) => {
+  const mode = process.env.NODE_ENV || "";
+  const envBackup = { ...process.env };
+  process.env = { NODE_ENV: mode };
+  const { envPrefix, envOverride, root, profile } = config;
+  const envInit = loadEnv(mode, profile, "");
+  const envProcess = loadEnv(mode, root, envPrefix);
+  process.env = envBackup;
+  return {
+    ...envInit,
+    ...envProcess,
+    ...envOverride,
+  };
 };

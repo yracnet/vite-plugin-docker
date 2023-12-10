@@ -58,7 +58,7 @@ const pluginDockerImpl = (
       },
     };
     for (let action of actionList) {
-      logger.info("Starting....");
+      logger.info(`onStart: ${action}`);
       await actions[action]?.();
       if (status.error) {
         const trace = {
@@ -109,6 +109,7 @@ const assertPluginDockerConfig = (
   let {
     enabled = true,
     name,
+    basedir = "docker",
     profile = "default",
     imageTag = `${profile}_${name}:latest`
       .toLowerCase()
@@ -117,15 +118,15 @@ const assertPluginDockerConfig = (
     imageIncludes = [],
     actionOptions = {},
     dockerfile = "Dockerfile",
-    // envPrefix = [],
-    // envOverride = {},
+    envPrefix = [],
+    envOverride = {},
     startActions = ["container:start"],
     finishActions = ["container:stop"],
     dockerOptions = defaultDockerOptions,
     hotReload = false,
   } = opts;
   const root = process.cwd();
-  profile = join(root, "docker", profile);
+  profile = join(root, basedir, profile);
   imageTag = imageTag.includes(":") ? imageTag : `${imageTag}:latest`;
   const logger = createLogger("info", {
     prefix: `${PLUGIN_NAME}:${name}`,
@@ -140,14 +141,15 @@ const assertPluginDockerConfig = (
   } = actionOptions;
   return {
     enabled,
-    root,
     name,
+    root,
+    basedir,
     profile,
     imageTag,
     imageIncludes,
     dockerfile,
-    // envPrefix,
-    // envOverride,
+    envPrefix,
+    envOverride,
     actionOptions: {
       onContainerCreateOptions,
       onContainerStartOptions,

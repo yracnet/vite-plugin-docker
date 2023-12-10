@@ -1,11 +1,12 @@
 import { PluginDockerConfig, PluginDockerStatus } from "./types";
 import Docker from "dockerode";
-import { createTarStream } from "./common";
+import { createTarStream, loadDockerEnv } from "./common";
 import {
   getContainerByName,
   getContainerInfoByName,
   getImageByName,
 } from "./dockerInfo";
+import { loadEnv } from "vite";
 
 type DockerAction = (
   config: PluginDockerConfig,
@@ -26,15 +27,17 @@ export const buildImage: DockerAction = async (config, docker, status) => {
     return status;
   }
   try {
+    const env = loadDockerEnv(config);
     const tarStream = createTarStream(config);
-    const imageOpts = config.actionOptions.onImageBuildOptions(
+    const buildOpts = config.actionOptions.onImageBuildOptions(
       {
         t: config.imageTag,
         dockerfile: config.dockerfile,
+        buildargs: env,
       },
       config
     );
-    const stream = await docker.buildImage(tarStream, imageOpts);
+    const stream = await docker.buildImage(tarStream, buildOpts);
     stream.pipe(process.stdout);
     await followProcess(stream, docker);
     const { image, imageInfo } = await getImageByName(config.imageTag, docker);
@@ -62,6 +65,7 @@ export const removeImage: DockerAction = async (config, docker, status) => {
 };
 
 export const createContainer: DockerAction = async (config, docker, status) => {
+  const env = loadDockerEnv(config);
   if (status.container) {
     config.logger.warn(`The container ${config.name} exists!`);
     return status;
@@ -146,12 +150,16 @@ export const stopContainer: DockerAction = async (config, docker, status) => {
 };
 
 export const removeContainer: DockerAction = async (config, docker, status) => {
-  const { container } = status;
+  const { container, containerInfo } = status;
   if (!container) {
     config.logger.warn(`The container ${config.name} don't exists!`);
     return status;
   }
   try {
+    if (containerInfo!.State === "running") {
+      config.logger.warn(`The container ${config.name} is running!`);
+      return status;
+    }
     const removeOpts = config.actionOptions.onContainerRemoveOptions(
       {},
       config

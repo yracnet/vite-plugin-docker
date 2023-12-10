@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "dockerode": "^4.0.0",
+    "dotenv": "^16.3.1",
     "tar-fs": "^3.0.4"
   },
   "peerDependencies": {

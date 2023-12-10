@@ -84,6 +84,14 @@ export type PluginDockerConfig = {
    */
   name: string;
   /**
+   * Root directory for the Docker configuration.
+   */
+  root: string;
+  /**
+   * Base directory.
+   */
+  basedir: string;
+  /**
    * Profile for building the Docker image.
    */
   profile: string;
@@ -91,10 +99,6 @@ export type PluginDockerConfig = {
    * Custom name for Dockerfile for building the image.
    */
   dockerfile: string;
-  /**
-   * Root directory for the Docker configuration.
-   */
-  root: string;
   /**
    * Tag for the Docker image.
    */
@@ -111,8 +115,16 @@ export type PluginDockerConfig = {
    * Action Options for customize options.
    */
   actionOptions: PluginDockerActionOptions;
-  // envPrefix: string[];
-  // envOverride: Record<string, string>;
+  /**
+   * Prefixes to be applied to environment variables during Docker container operations.
+   * These prefixes help prevent naming conflicts and ensure clarity in the Docker environment.
+   */
+  envPrefix: string[];
+  /**
+   * Overrides for specific environment variables during Docker container operations.
+   * This allows customization of environment variables for specific use cases or configurations.
+   */
+  envOverride: Record<string, string>;
   /**
    * Actions to perform when starting the container.
    */
