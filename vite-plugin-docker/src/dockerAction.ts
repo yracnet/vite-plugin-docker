@@ -6,7 +6,6 @@ import {
   getContainerInfoByName,
   getImageByName,
 } from "./dockerInfo";
-import { loadEnv } from "vite";
 
 type DockerAction = (
   config: PluginDockerConfig,
@@ -58,6 +57,7 @@ export const removeImage: DockerAction = async (config, docker, status) => {
   try {
     const removeOpts = config.actionOptions.onImageRemoveOptions({}, config);
     await image.remove(removeOpts);
+    status.image = undefined;
   } catch (error) {
     status.error = error;
   }
@@ -65,12 +65,12 @@ export const removeImage: DockerAction = async (config, docker, status) => {
 };
 
 export const createContainer: DockerAction = async (config, docker, status) => {
-  const env = loadDockerEnv(config);
   if (status.container) {
     config.logger.warn(`The container ${config.name} exists!`);
     return status;
   }
   try {
+    const env = loadDockerEnv(config);
     const containerOpts = config.actionOptions.onContainerCreateOptions(
       {
         Image: config.imageTag,
@@ -78,6 +78,7 @@ export const createContainer: DockerAction = async (config, docker, status) => {
         name: config.name,
         ExposedPorts: {},
         HostConfig: {},
+        Env: Object.entries(env).map((it) => `${it[0]}=${it[1]}`),
       },
       config
     );
@@ -134,12 +135,16 @@ export const startContainer: DockerAction = async (config, docker, status) => {
 };
 
 export const stopContainer: DockerAction = async (config, docker, status) => {
-  const { container } = status;
+  const { container, containerInfo } = status;
   if (!container) {
     config.logger.warn(`The container ${config.name} don't exists!`);
     return status;
   }
   try {
+    if (containerInfo!.State !== "running") {
+      config.logger.warn(`The container ${config.name} isn't running!`);
+      return status;
+    }
     const stopOpts = config.actionOptions.onContainerStopOptions({}, config);
     await container.stop(stopOpts);
     status.containerInfo = await getContainerInfoByName(config.name, docker);
@@ -165,6 +170,7 @@ export const removeContainer: DockerAction = async (config, docker, status) => {
       config
     );
     await container.remove(removeOpts);
+    status.container = undefined;
     status.containerInfo = await getContainerInfoByName(config.name, docker);
   } catch (error) {
     status.error = error;

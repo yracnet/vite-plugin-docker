@@ -11,10 +11,9 @@ export default defineConfig({
     //@ts-ignore
     pluginDocker([
       {
-        name: "NGinx",
-        dockerfile: "NGinx.Dockerfile",
-        envPrefix: ["NGINX_"],
-        envOverride: { NGINX_XXX: "1" },
+        enabled: true,
+        name: "nginx",
+        dockerfile: "Dockerfile",
         actionOptions: {
           onContainerCreateOptions: (opts) => {
             return {
@@ -26,13 +25,24 @@ export default defineConfig({
             };
           },
         },
-        startActions: ["image:build", "container:create", "container:start"],
+        startActions: [
+          "container:stop",
+          "container:remove",
+          "image:remove",
+          "image:build",
+          "container:create",
+          "container:start",
+        ],
       },
       {
+        enabled: false,
         name: "MongoV1",
         imageTag: "mongo",
         envPrefix: ["MONGO_"],
-        envOverride: { MONGO_XXX: "1" },
+        // envOverride: {
+        //   MONGO_INITDB_ROOT_USERNAME: "root",
+        //   MONGO_INITDB_ROOT_USERNAME: "toor",
+        // },
         actionOptions: {
           onContainerCreateOptions: (opts) => {
             return {

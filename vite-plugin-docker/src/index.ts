@@ -89,17 +89,19 @@ const pluginDockerImpl = (
 
 const pluginDockerArrayImpl = (configs: PluginDockerConfig[]): PluginOption => {
   const dockerRef: Record<string, Docker> = {};
-  return configs.map((config, ix) => {
-    const key = JSON.stringify(config.dockerOptions || "LOCAL");
-    let docker = dockerRef[key];
-    if (!docker) {
-      docker = new Docker(config.dockerOptions);
-      dockerRef[key] = docker;
-    }
-    const plugin = pluginDockerImpl(config, docker);
-    plugin.name = `${plugin.name}-${ix}`;
-    return plugin;
-  });
+  return configs
+    .filter((it) => it.enabled)
+    .map((config, ix) => {
+      const key = JSON.stringify(config.dockerOptions || "LOCAL");
+      let docker = dockerRef[key];
+      if (!docker) {
+        docker = new Docker(config.dockerOptions);
+        dockerRef[key] = docker;
+      }
+      const plugin = pluginDockerImpl(config, docker);
+      plugin.name = `${plugin.name}-${ix}`;
+      return plugin;
+    });
 };
 
 const assertPluginDockerConfig = (

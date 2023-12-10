@@ -59,9 +59,11 @@ export const loadDockerEnv = (config: PluginDockerConfig) => {
   const envInit = loadEnv(mode, profile, "");
   const envProcess = loadEnv(mode, root, envPrefix);
   process.env = envBackup;
-  return {
+  const env = {
     ...envInit,
     ...envProcess,
     ...envOverride,
   };
+  delete env.NODE_ENV;
+  return env;
 };
