@@ -61,7 +61,12 @@ const pluginDockerImpl = (
       logger.info("Starting....");
       await actions[action]?.();
       if (status.error) {
-        logger.error(`Error: ${action} ${status}`);
+        const trace = {
+          container: config.name,
+          image: config.imageTag,
+          error: status.error,
+        };
+        logger.error(`Error: ${action} ${JSON.stringify(trace, null, 2)}`);
         break;
       }
     }
