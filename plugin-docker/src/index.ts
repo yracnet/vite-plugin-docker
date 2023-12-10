@@ -8,9 +8,10 @@ import {
 import { Plugin, PluginOption, createLogger } from "vite";
 import {
   createContainer,
-  createImage,
+  buildImage,
   removeContainer,
   removeImage,
+  restartContainer,
   startContainer,
   stopContainer,
 } from "./dockerAction";
@@ -34,23 +35,26 @@ const pluginDockerImpl = (
     }));
     let status = await getStatus(config, docker);
     const actions: any = {
-      "create-image": async () => {
-        status = await createImage(config, docker, status);
+      "image:build": async () => {
+        status = await buildImage(config, docker, status);
       },
-      "create-container": async () => {
+      "image:remove": async () => {
+        status = await removeImage(config, docker, status);
+      },
+      "container:create": async () => {
         status = await createContainer(config, docker, status);
       },
-      "start-container": async () => {
+      "container:start": async () => {
         status = await startContainer(config, docker, status);
       },
-      "stop-container": async () => {
+      "container:restart": async () => {
+        status = await restartContainer(config, docker, status);
+      },
+      "container:stop": async () => {
         status = await stopContainer(config, docker, status);
       },
-      "remove-container": async () => {
+      "container:remove": async () => {
         status = await removeContainer(config, docker, status);
-      },
-      "remove-image": async () => {
-        status = await removeImage(config, docker, status);
       },
     };
     for (let action of actionList) {
@@ -110,8 +114,8 @@ const assertPluginDockerConfig = (
     dockerfile = "Dockerfile",
     // envPrefix = [],
     // envOverride = {},
-    startActions = ["start-container"],
-    finishActions = ["stop-container"],
+    startActions = ["container:start"],
+    finishActions = ["container:stop"],
     dockerOptions = defaultDockerOptions,
     hotReload = false,
   } = opts;

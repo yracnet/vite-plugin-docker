@@ -32,20 +32,19 @@ export default defineConfig({
 
 ### Attributes of `PluginDockerOptions`
 
-| Attribute                  | Description                                                      |
-| -------------------------- | ---------------------------------------------------------------- |
-| `name`                     | Name of the Docker container.                                    |
-| `dockerfile`               | Path to the Dockerfile for building the image.                   |
-| `enabled`                  | (Optional) Enable or disable the plugin. Default value: `true`.  |
-| `profile`                  | (Optional) Image build profile.                                  |
-| `imageTag`                 | (Optional) Docker image tag.                                     |
-| `imageIncludes`            | (Optional) Files included in the Docker image.                   |
-| `onContainerCreateOptions` | (Optional) Function to customize container creation options.     |
-| `onImageBuildOptions`      | (Optional) Function to customize image build options.            |
-| `startActions`             | (Optional) Actions to perform when starting the container.       |
-| `finishActions`            | (Optional) Actions to perform after the container finishes.      |
-| `dockerOptions`            | (Optional) Additional Docker options.                            |
-| `hotReload`                | (Optional) Enable or disable hot reload. Default value: `false`. |
+| Attribute       | Description                                                      |
+| --------------- | ---------------------------------------------------------------- |
+| `name`          | Name of the Docker container.                                    |
+| `dockerfile`    | Path to the Dockerfile for building the image.                   |
+| `enabled`       | (Optional) Enable or disable the plugin. Default value: `true`.  |
+| `profile`       | (Optional) Image build profile.                                  |
+| `imageTag`      | (Optional) Docker image tag.                                     |
+| `imageIncludes` | (Optional) Files included in the Docker image.                   |
+| `actionOptions` | (Optional) Action options for customizing Docker actions.        |
+| `startActions`  | (Optional) Actions to perform when starting the container.       |
+| `finishActions` | (Optional) Actions to perform after the container finishes.      |
+| `dockerOptions` | (Optional) Additional Docker options.                            |
+| `hotReload`     | (Optional) Enable or disable hot reload. Default value: `false`. |
 
 ### Example 1
 
@@ -57,16 +56,18 @@ export default defineConfig({
     pluginDocker({
       name: "NGinx",
       dockerfile: "NGinx.Dockerfile",
-      onContainerCreateOptions: (opts) => {
-        return {
-          ...opts,
-          ExposedPorts: { "80/tcp": {} },
-          HostConfig: {
-            PortBindings: { "80/tcp": [{ HostPort: "8080" }] },
-          },
-        };
+      actionOptions: {
+        onContainerCreateOptions: (opts) => {
+          return {
+            ...opts,
+            ExposedPorts: { "80/tcp": {} },
+            HostConfig: {
+              PortBindings: { "80/tcp": [{ HostPort: "8080" }] },
+            },
+          };
+        },
       },
-      startActions: ["create-image", "create-container", "start-container"],
+      startActions: ["image:build", "container:create", "container:start"],
     }),
   ],
 });
@@ -82,16 +83,18 @@ export default defineConfig({
     pluginDocker({
       name: "MongoV1",
       imageTag: "mongo",
-      onContainerCreateOptions: (opts) => {
-        return {
-          ...opts,
-          ExposedPorts: { "27017/tcp": {} },
-          HostConfig: {
-            PortBindings: { "27017/tcp": [{ HostPort: "27017" }] },
-          },
-        };
+      actionOptions: {
+        onContainerCreateOptions: (opts) => {
+          return {
+            ...opts,
+            ExposedPorts: { "27017/tcp": {} },
+            HostConfig: {
+              PortBindings: { "27017/tcp": [{ HostPort: "27017" }] },
+            },
+          };
+        },
       },
-      startActions: ["create-container", "start-container"],
+      startActions: ["container:create", "container:start"],
     }),
   ],
 });

@@ -20,7 +20,7 @@ const followProcess = (stream: any, docke: Docker) =>
     );
   });
 
-export const createImage: DockerAction = async (config, docker, status) => {
+export const buildImage: DockerAction = async (config, docker, status) => {
   if (status.image) {
     config.logger.warn(`The image: ${config.imageTag} exists!`);
     return status;
@@ -90,13 +90,36 @@ export const createContainer: DockerAction = async (config, docker, status) => {
   return status;
 };
 
-export const startContainer: DockerAction = async (config, docker, status) => {
+export const restartContainer: DockerAction = async (
+  config,
+  docker,
+  status
+) => {
   const { container } = status;
   if (!container) {
     config.logger.warn(`The container: ${config.name} don't exists!`);
     return status;
   }
   try {
+    await container.restart();
+    status.containerInfo = await getContainerInfoByName(config.name, docker);
+  } catch (error) {
+    status.error = error;
+  }
+  return status;
+};
+
+export const startContainer: DockerAction = async (config, docker, status) => {
+  const { container, containerInfo } = status;
+  if (!container) {
+    config.logger.warn(`The container: ${config.name} don't exists!`);
+    return status;
+  }
+  try {
+    if (containerInfo!.State === "running") {
+      config.logger.warn(`The container: ${config.name} is running!`);
+      return status;
+    }
     const startOpts = config.actionOptions.onContainerStartOptions({}, config);
     await container.start(startOpts);
     status.containerInfo = await getContainerInfoByName(config.name, docker);

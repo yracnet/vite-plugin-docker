@@ -13,31 +13,35 @@ export default defineConfig({
       {
         name: "NGinx",
         dockerfile: "NGinx.Dockerfile",
-        onContainerCreateOptions: (opts) => {
-          return {
-            ...opts,
-            ExposedPorts: { "80/tcp": {} },
-            HostConfig: {
-              PortBindings: { "80/tcp": [{ HostPort: "8080" }] },
-            },
-          };
+        actionOptions: {
+          onContainerCreateOptions: (opts) => {
+            return {
+              ...opts,
+              ExposedPorts: { "80/tcp": {} },
+              HostConfig: {
+                PortBindings: { "80/tcp": [{ HostPort: "8080" }] },
+              },
+            };
+          },
         },
-        startActions: ["create-image", "create-container", "start-container"],
+        startActions: ["image:build", "container:create", "container:start"],
       },
-      // {
-      //   name: "MongoV1",
-      //   imageTag: "mongo",
-      //   onContainerCreateOptions: (opts) => {
-      //     return {
-      //       ...opts,
-      //       ExposedPorts: { "27017/tcp": {} },
-      //       HostConfig: {
-      //         PortBindings: { "27017/tcp": [{ HostPort: "27017" }] },
-      //       },
-      //     };
-      //   },
-      //   startActions: ["create-container", "start-container"],
-      // },
+      {
+        name: "MongoV1",
+        imageTag: "mongo",
+        actionOptions: {
+          onContainerCreateOptions: (opts) => {
+            return {
+              ...opts,
+              ExposedPorts: { "27017/tcp": {} },
+              HostConfig: {
+                PortBindings: { "27017/tcp": [{ HostPort: "27017" }] },
+              },
+            };
+          },
+        },
+        startActions: ["container:create", "container:start"],
+      },
     ]),
   ],
 });

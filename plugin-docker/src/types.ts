@@ -3,16 +3,17 @@ import { Logger } from "vite";
 
 export type PluginDockerLifcicle = "start" | "finish";
 export type PluginDockerStartAction =
-  | "remove-image"
-  | "create-image"
-  | "remove-container"
-  | "create-container"
-  | "start-container";
+  | "image:build"
+  | "image:remove"
+  | "container:create"
+  | "container:start"
+  | "container:restart"
+  | "container:stop"
+  | "container:remove";
 export type PluginDockerFinishAction =
-  | "stop-container"
-  | "remove-container"
-  | "remove-image"
-  | "create-image";
+  | "container:stop"
+  | "container:remove"
+  | "image:remove";
 export type PluginDockerAction =
   | PluginDockerStartAction
   | PluginDockerFinishAction;
@@ -103,6 +104,10 @@ export type PluginDockerConfig = {
    */
   imageIncludes: string[];
   /**
+   * Docker options for additional configuration.
+   */
+  dockerOptions?: DockerOptions;
+  /**
    * Action Options for customize options.
    */
   actionOptions: PluginDockerActionOptions;
@@ -116,10 +121,6 @@ export type PluginDockerConfig = {
    * Actions to perform after the container finishes.
    */
   finishActions: PluginDockerFinishAction[];
-  /**
-   * Docker options for additional configuration.
-   */
-  dockerOptions?: DockerOptions;
   /**
    * Enable or disable hot reload.
    */
