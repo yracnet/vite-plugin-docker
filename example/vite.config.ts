@@ -1,5 +1,5 @@
-import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
+import { defineConfig } from "vite";
 //@ts-ignore
 import { pluginDocker } from "../vite-plugin-docker/src";
 //import { pluginDocker } from "vite-plugin-docker";
@@ -11,7 +11,7 @@ export default defineConfig({
     //@ts-ignore
     pluginDocker([
       {
-        enabled: true,
+        enabled: false,
         name: "nginx",
         dockerfile: "Dockerfile",
         actionOptions: {
@@ -55,6 +55,36 @@ export default defineConfig({
           },
         },
         startActions: ["container:create", "container:start"],
+      },
+      {
+        enabled: true,
+        name: "app-vite",
+        profile: "app",
+        imageIncludes: [
+          {
+            source: "dist",
+            target: "dist-react",
+          },
+        ],
+        actionOptions: {
+          onContainerCreateOptions: (opts) => {
+            return {
+              ...opts,
+              ExposedPorts: { "80/tcp": {} },
+              HostConfig: {
+                PortBindings: { "80/tcp": [{ HostPort: "8081" }] },
+              },
+            };
+          },
+        },
+        buildEndActions: [
+          "container:stop",
+          "container:remove",
+          "image:remove",
+          "image:build",
+          "container:create",
+          "container:start",
+        ],
       },
     ]),
   ],

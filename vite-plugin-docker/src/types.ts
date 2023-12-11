@@ -1,8 +1,7 @@
 import Dockerode from "dockerode";
 import { Logger } from "vite";
 
-export type PluginDockerLifcicle = "start" | "finish";
-export type PluginDockerStartAction =
+export type PluginDockerAction =
   | "image:build"
   | "image:remove"
   | "container:create"
@@ -10,13 +9,6 @@ export type PluginDockerStartAction =
   | "container:restart"
   | "container:stop"
   | "container:remove";
-export type PluginDockerFinishAction =
-  | "container:stop"
-  | "container:remove"
-  | "image:remove";
-export type PluginDockerAction =
-  | PluginDockerStartAction
-  | PluginDockerFinishAction;
 
 export type PluginDockerStatus = {
   image?: Dockerode.Image;
@@ -71,6 +63,11 @@ export type PluginDockerActionOptions = {
   ) => Dockerode.ImageRemoveOptions;
 };
 
+export type PluginDockerInclude = {
+  source: string;
+  target: string;
+};
+
 /**
  * Configuration options for the Vite.js Docker plugin.
  */
@@ -96,6 +93,10 @@ export type PluginDockerConfig = {
    */
   profile: string;
   /**
+   * Profile directory for building the Docker image.
+   */
+  profileDir: string;
+  /**
    * Custom name for Dockerfile for building the image.
    */
   dockerfile: string;
@@ -106,7 +107,7 @@ export type PluginDockerConfig = {
   /**
    * Array of file patterns to include in the Docker image.
    */
-  imageIncludes: string[];
+  imageIncludes: PluginDockerInclude[];
   /**
    * Docker options for additional configuration.
    */
@@ -126,13 +127,17 @@ export type PluginDockerConfig = {
    */
   envOverride: Record<string, string>;
   /**
-   * Actions to perform when starting the container.
+   *  Actions to perform when the dev/start project is initialized.
    */
-  startActions: PluginDockerStartAction[];
+  startActions: PluginDockerAction[];
   /**
-   * Actions to perform after the container finishes.
+   * Actions to perform when the build process is started.
    */
-  finishActions: PluginDockerFinishAction[];
+  buildStartActions: PluginDockerAction[];
+  /**
+   * Actions to perform when the build process is completed.
+   */
+  buildEndActions: PluginDockerAction[];
   /**
    * Enable or disable hot reload.
    */
@@ -147,7 +152,7 @@ export type DockerOptions = Dockerode.DockerOptions;
 
 export type PluginDockerOptions = Omit<
   Partial<PluginDockerConfig>,
-  "root" | "logger" | "actionOptions"
+  "root" | "logger" | "actionOptions" | "profileDir"
 > & {
   /**
    * Name of the Docker container.

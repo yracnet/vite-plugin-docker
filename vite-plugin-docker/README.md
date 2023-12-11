@@ -32,19 +32,22 @@ export default defineConfig({
 
 ### Attributes of `PluginDockerOptions`
 
-| Attribute       | Description                                                      |
-| --------------- | ---------------------------------------------------------------- |
-| `name`          | Name of the Docker container.                                    |
-| `dockerfile`    | Path to the Dockerfile for building the image.                   |
-| `enabled`       | (Optional) Enable or disable the plugin. Default value: `true`.  |
-| `profile`       | (Optional) Image build profile.                                  |
-| `imageTag`      | (Optional) Docker image tag.                                     |
-| `imageIncludes` | (Optional) Files included in the Docker image.                   |
-| `actionOptions` | (Optional) Action options for customizing Docker actions.        |
-| `startActions`  | (Optional) Actions to perform when starting the container.       |
-| `finishActions` | (Optional) Actions to perform after the container finishes.      |
-| `dockerOptions` | (Optional) Additional Docker options.                            |
-| `hotReload`     | (Optional) Enable or disable hot reload. Default value: `false`. |
+| Attribute           | Description                                                                                    |
+| ------------------- | ---------------------------------------------------------------------------------------------- |
+| `name`              | Name of the Docker container.                                                                  |
+| `dockerfile`        | Path to the Dockerfile for building the image.                                                 |
+| `enabled`           | (Optional) Enable or disable the plugin. Default value: `true`.                                |
+| `profile`           | (Optional) Image build profile.                                                                |
+| `imageTag`          | (Optional) Docker image tag.                                                                   |
+| `imageIncludes`     | (Optional) Files included in the Docker image.                                                 |
+| `envPrefix`         | (Optional) Prefixes to be applied to environment variables during Docker container operations. |
+| `envOverride`       | (Optional) Overrides for specific environment variables during Docker container operations.    |
+| `startActions`      | (Optional) Actions to perform when the dev/start project is initialized.                       |
+| `buildStartActions` | (Optional) Actions to perform when the build process is started.                               |
+| `buildEndActions`   | (Optional) Actions to perform when the build process is completed.                             |
+| `dockerOptions`     | (Optional) Additional Docker options.                                                          |
+| `actionOptions`     | (Optional) Action options for customizing Docker actions.                                      |
+| `hotReload`         | (Optional) Enable or disable hot reload. Default value: `false`.                               |
 
 ### Example 1
 

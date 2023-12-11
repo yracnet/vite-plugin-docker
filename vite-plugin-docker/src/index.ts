@@ -1,108 +1,10 @@
+import { default as Dockerode } from "dockerode";
 import { join } from "path";
-import Docker from "dockerode";
-import {
-  PluginDockerAction,
-  PluginDockerConfig,
-  PluginDockerOptions,
-} from "./types";
-import { Plugin, PluginOption, createLogger } from "vite";
-import {
-  createContainer,
-  buildImage,
-  removeContainer,
-  removeImage,
-  restartContainer,
-  startContainer,
-  stopContainer,
-} from "./dockerAction";
-import Dockerode from "dockerode";
-import { getStatus } from "./dockerInfo";
-const PLUGIN_NAME = "vite-plugin-docker";
-
-//@ts-ignore
-const dockerHotReload = process.__docker__ || (process.__docker__ = {});
+import { createLogger } from "vite";
+import { PLUGIN_NAME, pluginDockerArrayImpl } from "./pluginImpl";
+import { PluginDockerConfig, PluginDockerOptions } from "./types";
 
 export * from "./types";
-
-const pluginDockerImpl = (
-  config: PluginDockerConfig,
-  docker: Docker
-): Plugin => {
-  const doActions = async (phase: string, actionList: PluginDockerAction[]) => {
-    const loggerRef = config.logger;
-    const logger = (config.logger = createLogger("info", {
-      prefix: `${PLUGIN_NAME}:${config.name}:${phase}`,
-    }));
-    let status = await getStatus(config, docker);
-    const actions: any = {
-      "image:build": async () => {
-        status = await buildImage(config, docker, status);
-      },
-      "image:remove": async () => {
-        status = await removeImage(config, docker, status);
-      },
-      "container:create": async () => {
-        status = await createContainer(config, docker, status);
-      },
-      "container:start": async () => {
-        status = await startContainer(config, docker, status);
-      },
-      "container:restart": async () => {
-        status = await restartContainer(config, docker, status);
-      },
-      "container:stop": async () => {
-        status = await stopContainer(config, docker, status);
-      },
-      "container:remove": async () => {
-        status = await removeContainer(config, docker, status);
-      },
-    };
-    for (let action of actionList) {
-      logger.info(`onStart: ${action}`);
-      await actions[action]?.();
-      if (status.error) {
-        const trace = {
-          container: config.name,
-          image: config.imageTag,
-          error: status.error,
-        };
-        logger.error(`Error: ${action} ${JSON.stringify(trace, null, 2)}`);
-        break;
-      }
-    }
-    config.logger = loggerRef;
-  };
-  return {
-    name: "vite-plugin-docker",
-    configureServer: async () => {
-      const reload = dockerHotReload[config.name];
-      if (reload || reload === undefined) {
-        await doActions("start", config.startActions);
-        dockerHotReload[config.name] = config.hotReload === true;
-      }
-      process.on("SIGTERM", async () => {
-        await doActions("finish", config.finishActions);
-      });
-    },
-  };
-};
-
-const pluginDockerArrayImpl = (configs: PluginDockerConfig[]): PluginOption => {
-  const dockerRef: Record<string, Docker> = {};
-  return configs
-    .filter((it) => it.enabled)
-    .map((config, ix) => {
-      const key = JSON.stringify(config.dockerOptions || "LOCAL");
-      let docker = dockerRef[key];
-      if (!docker) {
-        docker = new Docker(config.dockerOptions);
-        dockerRef[key] = docker;
-      }
-      const plugin = pluginDockerImpl(config, docker);
-      plugin.name = `${plugin.name}-${ix}`;
-      return plugin;
-    });
-};
 
 const assertPluginDockerConfig = (
   opts: PluginDockerOptions,
@@ -122,13 +24,14 @@ const assertPluginDockerConfig = (
     dockerfile = "Dockerfile",
     envPrefix = [],
     envOverride = {},
-    startActions = ["container:start"],
-    finishActions = ["container:stop"],
+    startActions = [],
+    buildStartActions = [],
+    buildEndActions = [],
     dockerOptions = defaultDockerOptions,
     hotReload = false,
   } = opts;
   const root = process.cwd();
-  profile = join(root, basedir, profile);
+  const profileDir = join(root, basedir, profile);
   imageTag = imageTag.includes(":") ? imageTag : `${imageTag}:latest`;
   const logger = createLogger("info", {
     prefix: `${PLUGIN_NAME}:${name}`,
@@ -147,11 +50,15 @@ const assertPluginDockerConfig = (
     root,
     basedir,
     profile,
+    profileDir,
     imageTag,
     imageIncludes,
     dockerfile,
     envPrefix,
     envOverride,
+    startActions,
+    buildStartActions,
+    buildEndActions,
     actionOptions: {
       onContainerCreateOptions,
       onContainerStartOptions,
@@ -160,8 +67,6 @@ const assertPluginDockerConfig = (
       onImageBuildOptions,
       onImageRemoveOptions,
     },
-    startActions,
-    finishActions,
     dockerOptions,
     hotReload,
     logger,
