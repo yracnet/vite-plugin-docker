@@ -1,9 +1,8 @@
-import { PluginDockerConfig } from "./types";
 import fs from "fs";
-import path, { join } from "path";
+import { basename, join } from "path";
 import tar, { Pack } from "tar-fs";
-import dotenv from "dotenv";
 import { loadEnv } from "vite";
+import { PluginDockerConfig } from "./types";
 
 type ItemEntry = {
   name: string;
@@ -12,7 +11,6 @@ type ItemEntry = {
 
 export const createTarStream = (config: PluginDockerConfig): Pack => {
   const { profile, imageIncludes, root } = config;
-  const envDocker = loadDockerEnv(config);
   const tarStream = tar.pack(profile).on("error", (error) => {
     console.error("Error al crear el archivo tar:", error);
   });
@@ -22,8 +20,8 @@ export const createTarStream = (config: PluginDockerConfig): Pack => {
     if (info.isDirectory()) {
       fs.readdirSync(fullPath).forEach((it) => {
         attachFile({
-          name: path.join(name, it),
-          fullPath: path.join(fullPath, it),
+          name: join(name, it),
+          fullPath: join(fullPath, it),
         });
       });
     } else if (info.isFile()) {
@@ -34,9 +32,9 @@ export const createTarStream = (config: PluginDockerConfig): Pack => {
 
   imageIncludes
     .map((it) => {
-      const fullPath = path.join(root, it);
+      const fullPath = join(root, it);
       const stats = fs.statSync(fullPath);
-      const name = stats.isDirectory() ? "" : path.basename(it);
+      const name = stats.isDirectory() ? "" : basename(it);
       return {
         name,
         fullPath,

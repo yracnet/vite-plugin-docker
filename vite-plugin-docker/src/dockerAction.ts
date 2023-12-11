@@ -1,4 +1,3 @@
-import { PluginDockerConfig, PluginDockerStatus } from "./types";
 import Docker from "dockerode";
 import { createTarStream, loadDockerEnv } from "./common";
 import {
@@ -6,6 +5,7 @@ import {
   getContainerInfoByName,
   getImageByName,
 } from "./dockerInfo";
+import { PluginDockerConfig, PluginDockerStatus } from "./types";
 
 type DockerAction = (
   config: PluginDockerConfig,
