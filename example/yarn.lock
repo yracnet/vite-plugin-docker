@@ -1496,10 +1496,10 @@ util-deprecate@^1.0.1:
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
   integrity sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==
 
-vite-plugin-docker@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/vite-plugin-docker/-/vite-plugin-docker-0.0.1.tgz#65ab3ff184c1dc9be929728298be0d17153be82d"
-  integrity sha512-2018sBSvu+FRSXOR3QwScwg4j+Ae9GAjI0TFxgZZ6e2ElyopkiOfHkDVbUhyzJoz7f4Pumb2xXJIxR8l815NMg==
+vite-plugin-docker@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/vite-plugin-docker/-/vite-plugin-docker-0.0.5.tgz#2201e43956d8bb81bdead19b23287127d3f2cc70"
+  integrity sha512-iqpajgb0hxBKW+Gb9b2lrMejnYMeznlw/GWgHbU4SYjytbS6S6ETMNoeBXpMy2BMs84kvmsQJL2fyImTP8c6pg==
   dependencies:
     dockerode "^4.0.0"
     tar-fs "^3.0.4"

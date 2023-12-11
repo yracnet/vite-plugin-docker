@@ -1,8 +1,8 @@
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
 //@ts-ignore
-import { pluginDocker } from "../vite-plugin-docker/src";
-//import { pluginDocker } from "vite-plugin-docker";
+//import { pluginDocker } from "../vite-plugin-docker/src";
+import { pluginDocker } from "vite-plugin-docker";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -11,7 +11,7 @@ export default defineConfig({
     //@ts-ignore
     pluginDocker([
       {
-        enabled: false,
+        enabled: true,
         name: "nginx",
         dockerfile: "Dockerfile",
         actionOptions: {
