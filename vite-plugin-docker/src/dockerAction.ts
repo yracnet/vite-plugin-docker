@@ -1,6 +1,5 @@
 import Docker from "dockerode";
-import { join } from "path";
-import { createTarStream, loadDockerEnv, writeTarStream } from "./common";
+import { createTarStream, loadDockerEnv } from "./common";
 import {
   getContainerByName,
   getContainerInfoByName,
@@ -29,12 +28,12 @@ export const buildImage: DockerAction = async (config, docker, status) => {
   try {
     const env = loadDockerEnv(config);
     const tarStream = createTarStream(config);
-    const tarFile = join(
-      config.root,
-      config.basedir,
-      `${config.profile}_${config.name}.tar.gz`
-    );
-    await writeTarStream(tarFile, tarStream);
+    // const tarFile = join(
+    //   config.root,
+    //   config.basedir,
+    //   `${config.profile}_${config.name}.tar.gz`
+    // );
+    // await writeTarStream(tarFile, tarStream);
     const buildOpts = config.actionOptions.onImageBuildOptions(
       {
         t: config.imageTag,
@@ -43,7 +42,7 @@ export const buildImage: DockerAction = async (config, docker, status) => {
       },
       config
     );
-    const stream = await docker.buildImage(tarFile, buildOpts);
+    const stream = await docker.buildImage(tarStream, buildOpts);
     stream.pipe(process.stdout);
     await followProcess(stream, docker);
     const { image, imageInfo } = await getImageByName(config.imageTag, docker);
